@@ -48,6 +48,63 @@ def load_expenses():
 	return df
 
 
+def vis_barcharts(df):
+	'''
+	Inputs the type of timeframe 
+	user wishes to visualize
+	Options:
+	1. Weekly
+	2. Monthly 
+	Generates the barchart accordingly
+	'''
+	return 0
+
+
+def vis_piecharts(df):
+	'''
+	Inputs the type of chart 
+	user wishes to visualize
+	Options:
+	1. Weekly
+	2. Monthly 
+	3. Category
+	Generates the Piechart accordingly
+	'''
+	return 0
+
+
+def visualize_expenses(df):
+	'''
+	Handler function to 
+	navigate visualization options
+	'''
+	input_vis_expense_flag = False
+	while not input_vis_expense_flag:
+		input_vis_expense = input('Please enter how you would like to visualize the expenses, \n \
+				Options are : \n \
+				1. Barchart \n \
+				2. Piechart \n \
+				Enter Option: ')
+			
+		# Input sanitisation
+		try:
+			input_vis_expense = int(input_vis_expense)
+		except:
+			print('Invalid Input!! Please enter a valid integer for the task')
+			continue
+
+		# Input Handling
+		if input_vis_expense == 1:
+			vis_barcharts(df)
+			input_vis_expense_flag = True
+		elif input_vis_expense == 2:
+			vis_piecharts(df)
+			input_vis_expense_flag = True
+		else:
+			print('Please enter a valid visualization task')
+	return 0
+
+
 def filter_expenses(df):
 	'''
 	Present options to the 
@@ -263,6 +320,7 @@ if __name__ == '__main__':
 			filter_expenses(df)
 			input_task_flag = True
 		elif input_task == 3:
-			pass
+			visualize_expenses(df)
+			input_task_flag = True
 		else:
 			print('Invalid Input!! Please enter a valid integer for the task') 
