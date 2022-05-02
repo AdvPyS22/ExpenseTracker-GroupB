@@ -4,8 +4,14 @@ Members : Shunyu Wu, Jerome Staeheli, Kartik Kohli
 '''
 import csv
 from datetime import datetime
+import pandas as pd
+import numpy as np
 
-def save_expense_entry(title, category, date, amount, csv_file):
+
+DATA_FILE = './Expense.csv'
+
+
+def save_expense_entry(title, category, date, amount):
 	''' 
 	Append expense entry to a csv file
 	Inputs :
@@ -24,13 +30,36 @@ def save_expense_entry(title, category, date, amount, csv_file):
 	'''
 	entry_list = [title, category, date, amount]
 	try:
-		with open(csv_file, 'a') as f:
+		with open(DATA_FILE, 'a') as f:
 		    writer = csv.writer(f)
 		    writer.writerow(entry_list)
 		return True 
 	except:
 		return False
 
+
+def load_expenses():
+	'''
+	Load the expense csv file and
+	return dataframe of entries
+	'''
+	df = pd.read_csv(DATA_FILE, header=0)
+	df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
+	return df
+
+
+def filter_expenses():
+	'''
+	Present options to the 
+	user on the basis of which
+	filter task to perform
+	Options:
+	1. By Date
+	2. By a window (Start/End Date)
+	3. By Category
+	'''
+	return 0
+	
 
 def validate_date(string):
 	''' 
@@ -87,8 +116,7 @@ def input_category():
 	Category: ')
 
 
-if __name__ == '__main__':
-	print('Welcome to Expense Tracker!')
+def input_expense():
 	print('Let\'s start adding Expenses')
 	title = input('Enter the Title of the Expense: ')
 	
@@ -115,9 +143,36 @@ if __name__ == '__main__':
 		if not valid_amount_flag:
 			print('Please enter a valid amount value')
 
-	data_file = './Expense.csv'
-	if save_expense_entry(title, category, date, amount, data_file):
+	if save_expense_entry(title, category, date, amount):
 		print('Expense successfully saved!')
 	else:
 		print('Oops! We ran into some trouble. Please try again later')
 
+
+if __name__ == '__main__':
+	print('Welcome to Expense Tracker!')
+	df = load_expenses()
+	
+	input_task_flag = False
+	while not input_task_flag:
+		print('What would you like to do today? \n \
+			1. Enter Expense Entry \n \
+			2. Filter Expenses \n')
+		input_task = input('Please Enter the Number for the task you want to perform: ')
+		
+		# Input sanitisation
+		try:
+			input_task = int(input_task)
+		except:
+			print('Invalid Input!! Please enter a valid integer for the task')
+			continue
+
+		# Switch case of task options
+		if input_task == 1: 
+			input_expense()
+			input_task_flag = True
+		elif input_task == 2: 
+			filter_expense()
+			input_task_flag = True
+		else:
+			print('Invalid Input!! Please enter a valid integer for the task') 
