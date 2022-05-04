@@ -155,6 +155,29 @@ def pie_yearly(df_filter, year):
 	)
 	plt.show() 
 
+def pie_monthly(df_filter, month):
+	'''
+	draw yearly pie chart by category
+	'''
+	labels = []
+	items = []
+	# fetch category and amount
+	for _, row in df_filter.iterrows():
+		labels.append(category_dict[row.Category])
+		items.append(row.Amount)
+	# plot
+	plt.pie(items, #autopct='%1.1f%%',
+	shadow=False, startangle=90, wedgeprops={"edgecolor": "black"})
+	plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+	plt.title(month + " Monthly Category Breakdown", y = 1.05)
+	total = sum(items)
+	plt.legend(
+	labels = ['%s, %1.1f %%' % (l, (float(s) / total) * 100) for l, s in zip(labels, items)],
+	loc = "upper left",
+	bbox_to_anchor = (0.75,1),
+	)
+	plt.show() 
+
 def pie_timeframe(df_filter, start_date, end_date):
 	labels = []
 	items = []
@@ -217,6 +240,22 @@ def vis_piecharts(df):
 					df_filter = df_filter.groupby('Category').sum().reset_index()
 					pie_yearly(df_filter, year)
 			input_piechart_flag = True
+
+		# monthly
+		if input_piechart_option == 2:
+			valid_month_flag = False
+			while not valid_month_flag:
+				month = input('Enter the Month as MM-YYYY: ')
+				valid_month_flag = validate_month(month)
+				if not valid_month_flag:
+					print('Please enter a valid year in MM-YYYY Format')
+				else:
+					datetime_month = datetime.strptime(month, '%m-%Y')
+					df_filter = filter_expenses_by_month(df, datetime_month)
+					df_filter = df_filter.groupby('Category').sum().reset_index()
+					pie_monthly(df_filter, month)
+			input_piechart_flag = True
+
 
 		# timeframe
 		if input_piechart_option == 3:
