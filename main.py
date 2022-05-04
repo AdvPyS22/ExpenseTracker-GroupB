@@ -198,25 +198,49 @@ def pie_timeframe(df_filter, start_date, end_date):
 	)
 	plt.show()   
 
+def pie_category(df_filter, category, year):
+	labels = []
+	items = []
+	month_list = {1:"January", 2:"February", 3:"March", 4:"April", 5:"May", 6:"June", 7:"June",
+					8:"August", 9:"Sepetember", 10:"October", 11:"November", 12:"December"}
+
+	# fetch month and amount
+	for _, row in df_filter.iterrows():
+		labels.append(month_list[row.Month])
+		items.append(row.Amount)
+	# plot
+	plt.pie(items, #autopct='%1.1f%%',
+	shadow=False, startangle=90, wedgeprops={"edgecolor": "black"})
+	plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+	plt.title("Monthly expenses in "+category_dict[category]+ " in " + year, y = 1.05)
+	total = sum(items)
+	plt.legend(
+	labels = ['%s, %1.1f %%' % (l, (float(s) / total) * 100) for l, s in zip(labels, items)],
+	loc = "upper left",
+	bbox_to_anchor = (0.75,1),
+	)
+	plt.show()
+	return 0
+
 def vis_piecharts(df):
 	'''
 	Inputs the type of chart 
 	user wishes to visualize
 	Options:
-	1. Weekly
-	2. Monthly 
-	3. Category ?? by month? by date.. 
-	4. Time frame (test done)
+	1. Yearly expenses 
+	2. Monthly expenses
+	3. Expenses in a certain period
+	4. Expenses in a certain category 
 	Generates the Piechart accordingly
 	'''
 	input_piechart_flag = False
 	while not input_piechart_flag:
 		input_piechart_option = input('What do you want to have visualised. \n \
 			Options are : \n \
-			1. Yearly expenses \n \
-			2. Monthly expenses \n \
-			3. Expenses in a certain period \n \
-			4. Expenses in a certain category \n \
+			1. Yearly expenses by category\n \
+			2. Monthly expenses by category\n \
+			3. Expenses in a certain period by category\n \
+			4. Monthly expenses in a certain category in a year\n \
 			Enter Option: ')
 
 		# Input sanitisation
@@ -242,7 +266,7 @@ def vis_piecharts(df):
 			input_piechart_flag = True
 
 		# monthly
-		if input_piechart_option == 2:
+		elif input_piechart_option == 2:
 			valid_month_flag = False
 			while not valid_month_flag:
 				month = input('Enter the Month as MM-YYYY: ')
@@ -258,7 +282,7 @@ def vis_piecharts(df):
 
 
 		# timeframe
-		if input_piechart_option == 3:
+		elif input_piechart_option == 3:
 			valid_date_flag = False
 			while not valid_date_flag:
 				start_date = input('Enter the Start Date as DD-MM-YYYY: ')
@@ -274,6 +298,34 @@ def vis_piecharts(df):
 					df_filter = df_filter.groupby('Category').sum().reset_index()
 					pie_timeframe(df_filter, start_date, end_date)
 			input_piechart_flag = True	
+
+		# category
+		elif input_piechart_option == 4:
+			# Category input and error handling
+			valid_category_flag = False
+			while(not valid_category_flag):
+				category = input_category()
+				valid_category_flag = validate_category(category)
+				if not valid_category_flag:
+					print('Please enter a valid category between 1 and 6')
+				else:
+					valid_year_flag = False
+					while not valid_year_flag:
+						year = input('Enter the Year as YYYY: ')
+						valid_year_flag = validate_year(year)
+						if not valid_year_flag:
+							print('Please enter a valid year in YYYY Format')
+						else:	
+							category = int(category)
+							df_filter = filter_expenses_by_category(df, category)
+							df_filter.drop('Category', inplace=True, axis=1)
+							df_filter['Month'] =  df_filter['Date'].dt.month
+							df_filter = df_filter.groupby('Month').sum().reset_index()
+							pie_category(df_filter, category, year)
+
+			input_piechart_flag = True	
+		else :
+			print('Please enter a valid pie chart plot task')
 	return 0
 
 
@@ -354,7 +406,7 @@ def filter_expenses(df):
 					print(df_filter)
 			input_filter_expense_flag = True
 		# Code block for filtering expenses by month
-		if input_filter_expense == 2:
+		elif input_filter_expense == 2:
 			valid_month_flag = False
 			while not valid_month_flag:
 				month = input('Enter the Month as MM-YYYY: ')
@@ -369,7 +421,7 @@ def filter_expenses(df):
 			input_filter_expense_flag = True
 
 		# Code block for filtering expenses by year
-		if input_filter_expense == 3:
+		elif input_filter_expense == 3:
 			valid_year_flag = False
 			while not valid_year_flag:
 				year = input('Enter the Year as YYYY: ')
