@@ -155,6 +155,26 @@ def pie_yearly(df_filter, year):
 	)
 	plt.show() 
 
+def pie_timeframe(df_filter, start_date, end_date):
+	labels = []
+	items = []
+	# fetch category and amount
+	for index, row in df_filter.iterrows():
+		labels.append(category_dict[row.Category])
+		items.append(row.Amount)
+	# plot
+	plt.pie(items, #autopct='%1.1f%%',
+	    shadow=False, startangle=90, wedgeprops={"edgecolor": "black"})
+	plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+	plt.title("From " + start_date + " to " + end_date + " Category Breakdown", y = 1.05)
+	total = sum(items)
+	plt.legend(
+	  labels = ['%s, %1.1f %%' % (l, (float(s) / total) * 100) for l, s in zip(labels, items)],
+	  loc = "upper left",
+	  bbox_to_anchor = (0.75,1),
+	)
+	plt.show()   
+
 def vis_piecharts(df):
 	'''
 	Inputs the type of chart 
@@ -194,13 +214,27 @@ def vis_piecharts(df):
 				else:
 					datetime_year = datetime.strptime(year, '%Y')
 					df_filter = filter_expenses_by_year(df, datetime_year)
-				input_piechart_option = True
-				df_filter = df_filter.groupby('Category').sum().reset_index()
-				pie_yearly(df_filter, year)
-				input_piechart_flag = True
+					df_filter = df_filter.groupby('Category').sum().reset_index()
+					pie_yearly(df_filter, year)
+			input_piechart_flag = True
 
-
-
+		# timeframe
+		if input_piechart_option == 3:
+			valid_date_flag = False
+			while not valid_date_flag:
+				start_date = input('Enter the Start Date as DD-MM-YYYY: ')
+				end_date = input('Enter the End Date as DD-MM-YYYY: ')
+				valid_date_flag = validate_date(start_date) & validate_date(end_date)
+				if not valid_date_flag:
+					print('Please enter a valid date in DD-MM-YYYY Format')
+				else:
+					datetime_start_date = datetime.strptime(start_date, '%d-%m-%Y')
+					datetime_end_date = datetime.strptime(end_date, '%d-%m-%Y')
+					df_filter = filter_expenses_by_timeframe(df, datetime_start_date, \
+					                        datetime_end_date)
+					df_filter = df_filter.groupby('Category').sum().reset_index()
+					pie_timeframe(df_filter, start_date, end_date)
+			input_piechart_flag = True	
 	return 0
 
 
