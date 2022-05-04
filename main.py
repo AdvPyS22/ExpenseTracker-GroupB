@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 
 DATA_FILE = './Expense.csv'
-
+category_dict = {1:'Groceries', 2:'Entertainment', 3:'Travel', 4:'Shopping', 5:'Bills', 6:'Investments'}
 
 def save_expense_entry(title, category, date, amount):
 	''' 
@@ -132,6 +132,29 @@ def vis_barcharts(df):
                 break
     return 0
 
+def pie_yearly(df_filter, year):
+	'''
+	draw yearly pie chart by category
+	'''
+	labels = []
+	items = []
+	# fetch category and amount
+	for _, row in df_filter.iterrows():
+		labels.append(category_dict[row.Category])
+		items.append(row.Amount)
+	# plot
+	plt.pie(items, #autopct='%1.1f%%',
+	shadow=False, startangle=90, wedgeprops={"edgecolor": "black"})
+	plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+	plt.title(year + " Yearly Category Breakdown", y = 1.05)
+	total = sum(items)
+	plt.legend(
+	labels = ['%s, %1.1f %%' % (l, (float(s) / total) * 100) for l, s in zip(labels, items)],
+	loc = "upper left",
+	bbox_to_anchor = (0.75,1),
+	)
+	plt.show() 
+
 def vis_piecharts(df):
 	'''
 	Inputs the type of chart 
@@ -143,39 +166,43 @@ def vis_piecharts(df):
 	4. Time frame (test done)
 	Generates the Piechart accordingly
 	'''
+	input_piechart_flag = False
+	while not input_piechart_flag:
+		input_piechart_option = input('What do you want to have visualised. \n \
+			Options are : \n \
+			1. Yearly expenses \n \
+			2. Monthly expenses \n \
+			3. Expenses in a certain period \n \
+			4. Expenses in a certain category \n \
+			Enter Option: ')
 
-	category_dict = {1:'Groceries', 2:'Entertainment', 3:'Travel', 4:'Shopping', 5:'Bills', 6:'Investments'}
-	labels = []
-	items = []
+		# Input sanitisation
+		try:
+			input_piechart_option = int(input_piechart_option)
+		except:
+			print('Invalid Input!! Please enter a valid integer for the task')
+			continue
 
-	# test window pie chart
-	start_date = input('Enter the Start Date as DD-MM-YYYY: ')
-	end_date = input('Enter the End Date as DD-MM-YYYY: ')
-	valid_date_flag = validate_date(start_date) & validate_date(end_date)
-	if not valid_date_flag:
-		print('Please enter a valid date in DD-MM-YYYY Format')
-	else:
-		datetime_start_date = datetime.strptime(start_date, '%d-%m-%Y')
-		datetime_end_date = datetime.strptime(end_date, '%d-%m-%Y')
-		df_filter = filter_expenses_by_timeframe(df, datetime_start_date, \
-		                        datetime_end_date)
-	# fetch category and amount
-	for index, row in df_filter.iterrows():
-		labels.append(category_dict[row.Category])
-		items.append(row.Amount)
-	# plot
-	plt.pie(items, #autopct='%1.1f%%',
-	    shadow=False, startangle=90, wedgeprops={"edgecolor": "black"})
-	plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-	plt.title("From " + start_date + " to " + end_date + " Category Breakdown", y = 1.05)
-	total = sum(items)
-	plt.legend(
-	  labels = ['%s, %1.1f %%' % (l, (float(s) / total) * 100) for l, s in zip(labels, items)],
-	  loc = "upper left",
-	  bbox_to_anchor = (0.75,1),
-	)
-	plt.show()   
+		# yearly
+		if input_piechart_option == 1:
+			valid_year_flag = False
+			while not valid_year_flag:
+				year = input('Enter the Year as YYYY: ')
+				valid_year_flag = validate_year(year)
+				if not valid_year_flag:
+					print('Please enter a valid year in YYYY Format')
+				else:
+					datetime_year = datetime.strptime(year, '%Y')
+					df_filter = filter_expenses_by_year(df, datetime_year)
+				input_piechart_option = True
+				df_filter = df_filter.groupby('Category').sum().reset_index()
+				pie_yearly(df_filter, year)
+				input_piechart_flag = True
+
+
+
 	return 0
+
 
 
 def visualize_expenses(df):
@@ -320,6 +347,15 @@ def filter_expenses_by_month(df, datetime_month):
 	last_day = datetime_month.strftime("%Y-%m-31") # it doesn't matter if the month has less than 31 days.
 	return 	df[(df['Date'] >= first_day) & (df['Date'] <= last_day)]
 
+def filter_expenses_by_year(df, datetime_year):
+	'''
+	Filter entries by input year
+	and return the filtered Dateframe
+	'''
+	first_day = datetime_year.strftime("%Y-01-01")
+	last_day = datetime_year.strftime("%Y-12-31") 
+	return 	df[(df['Date'] >= first_day) & (df['Date'] <= last_day)]
+
 
 def filter_expenses_by_timeframe(df, start_date, end_date):
 	'''
@@ -361,6 +397,17 @@ def validate_month(string):
 	'''
 	try:
 		return bool(datetime.strptime(string, '%m-%Y'))
+	except ValueError:
+		return False
+
+def validate_year(string):
+	''' 
+	Given an input string, validate whether
+	it is a valid YYYY format 
+	Returns True if it is valid, False otherwise
+	'''
+	try:
+		return bool(datetime.strptime(string, '%Y'))
 	except ValueError:
 		return False
 
