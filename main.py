@@ -327,8 +327,9 @@ def filter_expenses(df):
 			Options are : \n \
 			1. By Date \n \
 			2. By Month \n \
-			3. By a window (Start/End Date) \n \
-			4. By Category \n \
+			3. By Year \n \
+			4. By a window (Start/End Date) \n \
+			5. By Category \n \
 			Enter Option: ')
 		
 		# Input sanitisation
@@ -366,8 +367,24 @@ def filter_expenses(df):
 					print(f'Expenses on %s are: ' % datetime_month.strftime('%b, %Y'))
 					print(df_filter)
 			input_filter_expense_flag = True
+
+		# Code block for filtering expenses by year
+		if input_filter_expense == 3:
+			valid_year_flag = False
+			while not valid_year_flag:
+				year = input('Enter the Year as YYYY: ')
+				valid_year_flag = validate_year(year)
+				if not valid_year_flag:
+					print('Please enter a valid month in YYYY Format')
+				else:
+					datetime_year = datetime.strptime(year, '%Y')
+					df_filter = filter_expenses_by_year(df, datetime_year)
+					print(f'Expenses on %s are: ' % datetime_year.strftime('%Y'))
+					print(df_filter)
+			input_filter_expense_flag = True
+
 		# Code block for filtering expenses by window
-		elif input_filter_expense == 3:
+		elif input_filter_expense == 4:
 			valid_date_flag = False
 			while not valid_date_flag:
 				start_date = input('Enter the Start Date as DD-MM-YYYY: ')
@@ -386,7 +403,7 @@ def filter_expenses(df):
 					print(df_filter)
 			input_filter_expense_flag = True
 		# Code block for filtering expenses by Category
-		elif input_filter_expense == 4:
+		elif input_filter_expense == 5:
 			valid_category_flag = False
 			while(not valid_category_flag):
 				category = input_category()
