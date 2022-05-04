@@ -217,16 +217,18 @@ def filter_expenses(df):
 	filter task to perform
 	Options:
 	1. By Date
-	2. By a window (Start/End Date)
-	3. By Category
+	2. By Month
+	3. By a window (Start/End Date)
+	4. By Category
 	'''
 	input_filter_expense_flag = False
 	while not input_filter_expense_flag:
 		input_filter_expense = input('Please enter how you would like to filter the expenses, \n \
 			Options are : \n \
 			1. By Date \n \
-			2. By a window (Start/End Date) \n \
-			3. By Category \n \
+			2. By Month \n \
+			3. By a window (Start/End Date) \n \
+			4. By Category \n \
 			Enter Option: ')
 		
 		# Input sanitisation
@@ -250,8 +252,22 @@ def filter_expenses(df):
 					print(f'Expenses on %s are: ' % datetime_date.strftime('%d %b, %Y'))
 					print(df_filter)
 			input_filter_expense_flag = True
+		# Code block for filtering expenses by month
+		if input_filter_expense == 2:
+			valid_month_flag = False
+			while not valid_month_flag:
+				month = input('Enter the Month as MM-YYYY: ')
+				valid_month_flag = validate_month(month)
+				if not valid_month_flag:
+					print('Please enter a valid month in MM-YYYY Format')
+				else:
+					datetime_month = datetime.strptime(month, '%m-%Y')
+					df_filter = filter_expenses_by_month(df, datetime_month)
+					print(f'Expenses on %s are: ' % datetime_month.strftime('%b, %Y'))
+					print(df_filter)
+			input_filter_expense_flag = True
 		# Code block for filtering expenses by window
-		elif input_filter_expense == 2:
+		elif input_filter_expense == 3:
 			valid_date_flag = False
 			while not valid_date_flag:
 				start_date = input('Enter the Start Date as DD-MM-YYYY: ')
@@ -270,7 +286,7 @@ def filter_expenses(df):
 					print(df_filter)
 			input_filter_expense_flag = True
 		# Code block for filtering expenses by Category
-		elif input_filter_expense == 3:
+		elif input_filter_expense == 4:
 			valid_category_flag = False
 			while(not valid_category_flag):
 				category = input_category()
@@ -294,6 +310,15 @@ def filter_expenses_by_date(df, date):
 	and return the filtered Dateframe
 	'''
 	return df[df['Date'] == date.strftime('%Y-%m-%d')]
+
+def filter_expenses_by_month(df, datetime_month):
+	'''
+	Filter entries by input month
+	and return the filtered Dateframe
+	'''
+	first_day = datetime_month.strftime("%Y-%m-01")
+	last_day = datetime_month.strftime("%Y-%m-31") # it doesn't matter if the month has less than 31 days.
+	return 	df[(df['Date'] >= first_day) & (df['Date'] <= last_day)]
 
 
 def filter_expenses_by_timeframe(df, start_date, end_date):
@@ -324,6 +349,18 @@ def validate_date(string):
 	'''
 	try:
 		return bool(datetime.strptime(string, '%d-%m-%Y'))
+	except ValueError:
+		return False
+
+
+def validate_month(string):
+	''' 
+	Given an input string, validate whether
+	it is a valid MM-YYYY format 
+	Returns True if it is valid, False otherwise
+	'''
+	try:
+		return bool(datetime.strptime(string, '%m-%Y'))
 	except ValueError:
 		return False
 
