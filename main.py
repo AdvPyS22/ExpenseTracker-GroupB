@@ -132,7 +132,6 @@ def vis_barcharts(df):
                 break
     return 0
 
-
 def vis_piecharts(df):
 	'''
 	Inputs the type of chart 
@@ -140,9 +139,42 @@ def vis_piecharts(df):
 	Options:
 	1. Weekly
 	2. Monthly 
-	3. Category
+	3. Category ?? by month? by date.. 
+	4. Time frame (test done)
 	Generates the Piechart accordingly
 	'''
+
+	category_dict = {1:'Groceries', 2:'Entertainment', 3:'Travel', 4:'Shopping', 5:'Bills', 6:'Investments'}
+	labels = []
+	items = []
+
+	# test window pie chart
+	start_date = input('Enter the Start Date as DD-MM-YYYY: ')
+	end_date = input('Enter the End Date as DD-MM-YYYY: ')
+	valid_date_flag = validate_date(start_date) & validate_date(end_date)
+	if not valid_date_flag:
+		print('Please enter a valid date in DD-MM-YYYY Format')
+	else:
+		datetime_start_date = datetime.strptime(start_date, '%d-%m-%Y')
+		datetime_end_date = datetime.strptime(end_date, '%d-%m-%Y')
+		df_filter = filter_expenses_by_timeframe(df, datetime_start_date, \
+		                        datetime_end_date)
+	# fetch category and amount
+	for index, row in df_filter.iterrows():
+		labels.append(category_dict[row.Category])
+		items.append(row.Amount)
+	# plot
+	plt.pie(items, #autopct='%1.1f%%',
+	    shadow=False, startangle=90, wedgeprops={"edgecolor": "black"})
+	plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+	plt.title("From " + start_date + " to " + end_date + " Category Breakdown", y = 1.05)
+	total = sum(items)
+	plt.legend(
+	  labels = ['%s, %1.1f %%' % (l, (float(s) / total) * 100) for l, s in zip(labels, items)],
+	  loc = "upper left",
+	  bbox_to_anchor = (0.75,1),
+	)
+	plt.show()   
 	return 0
 
 
