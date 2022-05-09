@@ -50,6 +50,20 @@ def load_expenses():
 
 
 def add_week_month_num(df):
+    '''
+    Parameters
+    ----------
+    df : panda dataframe
+        with following columns:
+            'Date' with datetime type elements
+            
+    Returns
+    -------
+    expense_df : panda dataframe
+        with following columns added:
+            'Weeks' with int type elements
+            'Months' with int type elements
+    '''
     # Copy dataframe so things can be changed without messing up main dataframe
     expense_df = df.copy(deep = True)
     # Add columns for number of weeks and months
@@ -65,7 +79,24 @@ def add_week_month_num(df):
     return expense_df
 
 def x_ticks(df, time_step, end_date):
+    '''
+    Parameters
+    ----------
+    df : panda datafram
+        with following columns:
+            'Date' with datetime type elements
+            'Weeks' with int type elements
+            'Months' with int type elements   
+    time_step : string
+        time_step is a string either 'Months' or 'Weeks'.
+    end_date : datetime
+        end_date is a chosen date the data point with later dates should not be displayed.
 
+    Returns
+    -------
+    x_tick_values : list
+        list with the dates of every datapoint in the chosen timestep.
+    '''
     x_tick_df = df.sort_values('Date', ascending = True)
     x_tick_df = x_tick_df.drop_duplicates(subset = time_step, keep = 'first')
     x_tick_values = list(x_tick_df['Date'])
@@ -74,6 +105,17 @@ def x_ticks(df, time_step, end_date):
     return x_tick_values
 
 def vis_barcharts(df):
+    '''
+    Parameters
+    ----------
+    df : panda dataframe
+        with following columns:
+            'Amount' with str type elements that can be converted to a float
+            'Date' with datetime type elements
+
+    Visualizes as a Barplot the expenses from a start date to a end date.
+    The timestep can either be 'Months' or 'Weeks' and are chosen by the user
+    '''
     # Ask user about the timspan and the time steps he wants to have visualized
     show_plot = input('What do you want to have visualised. \n \
                           To display barplot of weekly expense input week or w. \n \
@@ -84,6 +126,7 @@ def vis_barcharts(df):
     # Check if user wanted visualization
     if show_plot.lower() != 'week' or show_plot.lower() != 'w' or show_plot.lower() != 'both' or show_plot.lower() != 'b' or show_plot.lower() != 'month' or show_plot.lower() != 'm':
         expense_df = add_week_month_num(df)
+        
         # Date input and error handling
         valid_date_flag = False
         while(not valid_date_flag):
@@ -101,9 +144,11 @@ def vis_barcharts(df):
         start_date = datetime.strptime(start_date, '%d-%m-%Y')
         end_date = datetime.strptime(end_date, '%d-%m-%Y')
         date_mask = (expense_df['Date'] >= start_date) & (expense_df['Date'] <= end_date)
+        expense_df = expense_df[date_mask]
+        
         # Add up all expenses of the same week and plot it
         if show_plot.lower() == 'week' or show_plot.lower() == 'w' or show_plot.lower() == 'both' or show_plot.lower() == 'b':
-            diff_weeks = list(set(expense_df[date_mask]['Weeks']))
+            diff_weeks = list(set(expense_df['Weeks']))
             expense_per_week = np.zeros(len(diff_weeks), dtype = float)
             for week in range(len(diff_weeks)):
                 amount_per_week = 0
@@ -123,7 +168,7 @@ def vis_barcharts(df):
             plt.show()
         # Add up all expenses of the same month and plot it
         if show_plot.lower() == 'month' or show_plot.lower() == 'm' or show_plot.lower() == 'both' or show_plot.lower() == 'b':
-            diff_month = list(set(expense_df[date_mask]['Months']))
+            diff_month = list(set(expense_df['Months']))
             expense_per_month = np.zeros(len(diff_month), dtype = float)
             for month in range(len(diff_month)):
                 amount_per_month = 0
