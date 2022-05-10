@@ -78,6 +78,7 @@ def add_week_month_num(df):
     expense_df['Months'] = expense_df['Months'] - np.min(expense_df['Months'])
     return expense_df
 
+
 def x_ticks(df, time_step, end_date):
     '''
     Parameters
@@ -104,6 +105,69 @@ def x_ticks(df, time_step, end_date):
         x_tick_values[dates] = x_tick_values[dates].date()
     return x_tick_values
 
+
+def ask_date(date_question_str):
+    '''
+    Parameters
+    ----------
+    date_question_str : str
+        The question for the date you want to ask the user. The date has to be in DD-MM-YYYY Format.
+
+    Returns
+    -------
+    some_date : str
+        The date the user did input in the DD-MM-YYYY Format.
+    '''
+    # Date input and error handling
+    valid_date_flag = False
+    while(not valid_date_flag):
+        some_date = input(date_question_str)
+        valid_date_flag = validate_date(some_date)
+        if not valid_date_flag:
+            print('Please enter a valid date in DD-MM-YYYY Format')
+    return some_date  
+
+    
+def generate_plot(expense_df, column_str, end_date):
+    '''
+    Parameters
+    ----------
+    expense_df : TYPE
+        With the following columns:
+            'Amount' with str type elements that can be converted to a float
+            'Date' with datetime type elements
+            an column with int type elements you can plot 'Amount' to preferably 'Weeks' or 'Months'
+    column_str : str
+        Describes the column name you want to barplot 'Amount' to.
+    end_date : datetime
+        The date the latest datapoint can be from.
+
+    Prints
+    -------
+    Barplots with the amount spent either in 'Months' or 'Weeks', 
+    while displaying the first transaction of the timestep.
+    '''
+    print(type(end_date))
+    diff_weeks = list(set(expense_df[column_str]))
+    expense_per_week = np.zeros(len(diff_weeks), dtype = float)
+    for week in range(len(diff_weeks)):
+        amount_per_week = 0
+        tranactions_per_week = expense_df[expense_df[column_str] == diff_weeks[week]]
+        tranactions_per_week = list(tranactions_per_week['Amount'])
+        for transaction in range(len(tranactions_per_week)):
+            amount_per_week += float(tranactions_per_week[transaction])
+        expense_per_week[week] = amount_per_week
+    diff_weeks = np.asarray(diff_weeks) + 1
+    plt.rcParams.update({'font.size': 13})
+    plt.bar(diff_weeks, expense_per_week, width=1.0)
+    plt.xticks(diff_weeks, x_ticks(expense_df, column_str, end_date))
+    plt.xticks(rotation=90)
+    plt.title(column_str[:-1] + 'ly expenses')
+    plt.xlabel(column_str[:-1] + ' within chosen dates')
+    plt.ylabel('Amount of expense')
+    plt.show()
+
+
 def vis_barcharts(df):
     '''
     Parameters
@@ -123,69 +187,28 @@ def vis_barcharts(df):
                           To display both input both or b. \n \
                           To not diplay anything input anything else. \n \
                           Enter option:')
+    show_week = show_plot.lower() == 'week' or show_plot.lower() == 'w' or show_plot.lower() == 'both' or show_plot.lower() == 'b'
+    show_month = show_plot.lower() == 'month' or show_plot.lower() == 'm' or show_plot.lower() == 'both' or show_plot.lower() == 'b'
     # Check if user wanted visualization
-    if show_plot.lower() != 'week' or show_plot.lower() != 'w' or show_plot.lower() != 'both' or show_plot.lower() != 'b' or show_plot.lower() != 'month' or show_plot.lower() != 'm':
+    if show_week or show_month:
+        # Add number of months and weeks to dataframe
         expense_df = add_week_month_num(df)
-        
-        # Date input and error handling
-        valid_date_flag = False
-        while(not valid_date_flag):
-            start_date = input('Enter the start Date of the Expensees you want to have visualized as DD-MM-YYYY: ')
-            valid_date_flag = validate_date(start_date)
-            if not valid_date_flag:
-                print('Please enter a valid date in DD-MM-YYYY Format')
-        valid_date_flag = False
-        while(not valid_date_flag):
-            end_date = input('Enter the start Date of the Expensees you want to have visualized as DD-MM-YYYY: ')
-            valid_date_flag = validate_date(end_date)
-            if not valid_date_flag:
-                print('Please enter a valid date in DD-MM-YYYY Format')
+        # Ask for start and end date
+        start_date = ask_date('Enter the start Date of the Expenses you want to have visualized as DD-MM-YYYY: ')
+        end_date = ask_date('Enter the end Date of the Expenses you want to have visualized as DD-MM-YYYY: ')
         # Make mask with start and end time
         start_date = datetime.strptime(start_date, '%d-%m-%Y')
         end_date = datetime.strptime(end_date, '%d-%m-%Y')
         date_mask = (expense_df['Date'] >= start_date) & (expense_df['Date'] <= end_date)
         expense_df = expense_df[date_mask]
-        
         # Add up all expenses of the same week and plot it
-        if show_plot.lower() == 'week' or show_plot.lower() == 'w' or show_plot.lower() == 'both' or show_plot.lower() == 'b':
-            diff_weeks = list(set(expense_df['Weeks']))
-            expense_per_week = np.zeros(len(diff_weeks), dtype = float)
-            for week in range(len(diff_weeks)):
-                amount_per_week = 0
-                tranactions_per_week = expense_df[expense_df['Weeks'] == diff_weeks[week]]
-                tranactions_per_week = list(tranactions_per_week['Amount'])
-                for transaction in range(len(tranactions_per_week)):
-                    amount_per_week += float(tranactions_per_week[transaction])
-                expense_per_week[week] = amount_per_week
-            diff_weeks = np.asarray(diff_weeks) + 1
-            plt.rcParams.update({'font.size': 13})
-            plt.bar(diff_weeks, expense_per_week, width=1.0)
-            plt.xticks(diff_weeks, x_ticks(expense_df, 'Weeks', end_date))
-            plt.xticks(rotation=90)
-            plt.title('Weekly expenses')
-            plt.xlabel('Week within chosen dates')
-            plt.ylabel('Amount of expense')
-            plt.show()
+        if show_week:
+            generate_plot(expense_df, 'Weeks', end_date)
         # Add up all expenses of the same month and plot it
-        if show_plot.lower() == 'month' or show_plot.lower() == 'm' or show_plot.lower() == 'both' or show_plot.lower() == 'b':
-            diff_month = list(set(expense_df['Months']))
-            expense_per_month = np.zeros(len(diff_month), dtype = float)
-            for month in range(len(diff_month)):
-                amount_per_month = 0
-                tranactions_per_month = expense_df[expense_df['Months'] == diff_month[month]]
-                tranactions_per_month = list(tranactions_per_month['Amount'])
-                for transaction in range(len(tranactions_per_month)):
-                    amount_per_month += float(tranactions_per_month[transaction])
-                expense_per_month[month] = amount_per_month
-            diff_month = np.asarray(diff_month) + 1
-            plt.bar(diff_month, expense_per_month, width=1.0)
-            plt.xticks(diff_month, x_ticks(expense_df, 'Months', end_date))
-            plt.xticks(rotation=90)
-            plt.title('Monthly expenses')
-            plt.xlabel('Month within chosen dates')
-            plt.ylabel('Amount of expense')
-            plt.show()
+        if show_month:
+            generate_plot(expense_df, 'Months', end_date)
     return 0
+
 
 def pie_yearly(df_filter, year):
 	'''
