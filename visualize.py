@@ -4,10 +4,11 @@ Members : Shunyu Wu, Jerome Staeheli, Kartik Kohli
 '''
 
 import csv
-import datetime 
+from datetime import datetime
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from retrieval import Retrieval
 from helper import *
 
 class Visualize:
@@ -257,7 +258,7 @@ class Visualize:
 						print('Please enter a valid year in YYYY Format')
 					else:
 						datetime_year = datetime.datetime.strptime(year, '%Y')
-						df_filter = filter_expenses_by_year(self.df, datetime_year)
+						df_filter = Retrieval.filter_expenses_by_year(self.df, datetime_year)
 						df_filter = df_filter.groupby('Category').sum().reset_index()
 						self.pie_yearly(df_filter, year)
 				input_piechart_flag = True
@@ -272,7 +273,7 @@ class Visualize:
 						print('Please enter a valid year in MM-YYYY Format')
 					else:
 						datetime_month = datetime.datetime.strptime(month, '%m-%Y')
-						df_filter = filter_expenses_by_month(self.df, datetime_month)
+						df_filter = Retrieval.filter_expenses_by_month(self.df, datetime_month)
 						df_filter = df_filter.groupby('Category').sum().reset_index()
 						self.pie_monthly(df_filter, month)
 				input_piechart_flag = True
@@ -290,7 +291,7 @@ class Visualize:
 					else:
 						datetime_start_date = datetime.datetime.strptime(start_date, '%d-%m-%Y')
 						datetime_end_date = datetime.datetime.strptime(end_date, '%d-%m-%Y')
-						df_filter = filter_expenses_by_timeframe(self.df, datetime_start_date, \
+						df_filter = Retrieval.filter_expenses_by_timeframe(self.df, datetime_start_date, \
 						                        datetime_end_date)
 						df_filter = df_filter.groupby('Category').sum().reset_index()
 						self.pie_timeframe(df_filter, start_date, end_date)
@@ -314,7 +315,7 @@ class Visualize:
 								print('Please enter a valid year in YYYY Format')
 							else:	
 								category = int(category)
-								df_filter = filter_expenses_by_category(df, category)
+								df_filter = Retrieval.filter_expenses_by_category(df, category)
 								df_filter.drop('Category', inplace=True, axis=1)
 								df_filter['Month'] =  df_filter['Date'].dt.month
 								df_filter = df_filter.groupby('Month').sum().reset_index()
