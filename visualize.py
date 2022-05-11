@@ -352,7 +352,7 @@ class Visualize:
 
 	def pie_monthly(self, df_filter, month):
 		'''
-		draw yearly pie chart by category
+		draw monthly pie chart by category
 		'''
 		labels = []
 		items = []
@@ -375,6 +375,9 @@ class Visualize:
 
 
 	def pie_timeframe(self, df_filter, start_date, end_date):
+		'''
+		draw pie chart in a certain time frame according to category
+		'''
 		labels = []
 		items = []
 		# fetch category and amount
@@ -396,6 +399,9 @@ class Visualize:
 
 
 	def pie_category(self, df_filter, category, year):
+		'''
+		draw piechart of expenses in a year of different categories
+		'''
 		labels = []
 		items = []
 		month_list = {1:"January", 2:"February", 3:"March", 4:"April", 5:"May", 6:"June", 7:"June",
