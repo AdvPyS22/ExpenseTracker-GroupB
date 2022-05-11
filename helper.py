@@ -1,5 +1,7 @@
 import datetime
 
+category_dict = {1:'Groceries', 2:'Entertainment', 3:'Travel', 4:'Shopping', 5:'Bills', 6:'Investments'}
+
 def input_category():
 	# Category input string 
 	return input('Enter Category as an Integer as follows: \n \
