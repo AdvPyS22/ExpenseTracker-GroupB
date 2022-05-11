@@ -1,5 +1,17 @@
 import datetime
 
+def input_category():
+	# Category input string 
+	return input('Enter Category as an Integer as follows: \n \
+	1 : Groceries \n \
+	2 : Entertainment \n \
+	3 : Travel \n \
+	4 : Shopping \n \
+	5 : Bills \n \
+	6 : Investments \n \
+	Category: ')
+
+
 def validate_date(string):
 	''' 
 	Given an input string, validate whether
