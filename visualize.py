@@ -315,7 +315,7 @@ class Visualize:
 								print('Please enter a valid year in YYYY Format')
 							else:	
 								category = int(category)
-								df_filter = Retrieval.filter_expenses_by_category(df, category)
+								df_filter = Retrieval.filter_expenses_by_category(self.df, category)
 								df_filter.drop('Category', inplace=True, axis=1)
 								df_filter['Month'] =  df_filter['Date'].dt.month
 								df_filter = df_filter.groupby('Month').sum().reset_index()
