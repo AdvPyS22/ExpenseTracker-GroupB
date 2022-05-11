@@ -62,7 +62,7 @@ class Retrieval:
 						print('Please enter a valid date in DD-MM-YYYY Format')
 					else:
 						datetime_date = dt.strptime(date, '%d-%m-%Y')
-						df_filter = self.filter_expenses_by_date(datetime_date)
+						df_filter = self.filter_expenses_by_date(self.df, datetime_date)
 						print(f'Expenses on %s are: ' % datetime_date.strftime('%d %b, %Y'))
 						print(df_filter)
 				input_filter_expense_flag = True
@@ -76,7 +76,7 @@ class Retrieval:
 						print('Please enter a valid month in MM-YYYY Format')
 					else:
 						datetime_month = dt.strptime(month, '%m-%Y')
-						df_filter = self.filter_expenses_by_month(datetime_month)
+						df_filter = self.filter_expenses_by_month(self.df, datetime_month)
 						print(f'Expenses on %s are: ' % datetime_month.strftime('%b, %Y'))
 						print(df_filter)
 				input_filter_expense_flag = True
@@ -91,7 +91,7 @@ class Retrieval:
 						print('Please enter a valid month in YYYY Format')
 					else:
 						datetime_year = dt.strptime(year, '%Y')
-						df_filter = self.filter_expenses_by_year(datetime_year)
+						df_filter = self.filter_expenses_by_year(self.df, datetime_year)
 						print(f'Expenses on %s are: ' % datetime_year.strftime('%Y'))
 						print(df_filter)
 				input_filter_expense_flag = True
@@ -108,7 +108,7 @@ class Retrieval:
 					else:
 						datetime_start_date = dt.strptime(start_date, '%d-%m-%Y')
 						datetime_end_date = dt.strptime(end_date, '%d-%m-%Y')
-						df_filter = self.filter_expenses_by_timeframe(datetime_start_date, \
+						df_filter = self.filter_expenses_by_timeframe(self.df, datetime_start_date, \
 																		datetime_end_date)
 						print(f'Expenses within %s and %s are: ' % (datetime_start_date.strftime('%d %b, %Y'),
 																	datetime_end_date.strftime('%d %b, %Y'))
@@ -125,7 +125,7 @@ class Retrieval:
 						print('Please enter a valid category between 1 and 6')
 					else:
 						category = int(category)
-						df_filter = self.filter_expenses_by_category(category)
+						df_filter = self.filter_expenses_by_category(self.df, category)
 						print(f'Expenses with Category %d are: ' % category)
 						print(df_filter)
 				input_filter_expense_flag = True
@@ -134,35 +134,36 @@ class Retrieval:
 		return 0
 
 
-	def filter_expenses_by_date(self, date):
+	@staticmethod
+	def filter_expenses_by_date(df, date):
 		'''
 		Filter entries by input date
 		and return the filtered Dateframe
 		'''
-		return self.df[self.df['Date'] == date.strftime('%Y-%m-%d')]
+		return df[df['Date'] == date.strftime('%Y-%m-%d')]
 
-
-	def filter_expenses_by_month(self, datetime_month):
+	@staticmethod
+	def filter_expenses_by_month(df, datetime_month):
 		'''
 		Filter entries by input month
 		and return the filtered Dateframe
 		'''
 		first_day = datetime_month.strftime("%Y-%m-01")
 		last_day = datetime_month.strftime("%Y-%m-31") # it doesn't matter if the month has less than 31 days.
-		return 	self.df[(self.df['Date'] >= first_day) & (self.df['Date'] <= last_day)]
+		return 	df[(df['Date'] >= first_day) & (df['Date'] <= last_day)]
 
-
-	def filter_expenses_by_year(self, datetime_year):
+	@staticmethod
+	def filter_expenses_by_year(df, datetime_year):
 		'''
 		Filter entries by input year
 		and return the filtered Dateframe
 		'''
 		first_day = datetime_year.strftime("%Y-01-01")
 		last_day = datetime_year.strftime("%Y-12-31") 
-		return 	self.df[(self.df['Date'] >= first_day) & (self.df['Date'] <= last_day)]
+		return 	df[(df['Date'] >= first_day) & (df['Date'] <= last_day)]
 
-
-	def filter_expenses_by_timeframe(self, start_date, end_date):
+	@staticmethod
+	def filter_expenses_by_timeframe(df, start_date, end_date):
 		'''
 		Filter entries by input
 		start and end date
@@ -170,15 +171,15 @@ class Retrieval:
 		'''
 		start_date_f = start_date.strftime('%Y-%m-%d')
 		end_date_f = end_date.strftime('%Y-%m-%d')
-		return 	self.df[(self.df['Date'] >= start_date_f) & (self.df['Date'] <= end_date_f)]
+		return 	df[(df['Date'] >= start_date_f) & (df['Date'] <= end_date_f)]
 
-
-	def filter_expenses_by_category(self, category):
+	@staticmethod
+	def filter_expenses_by_category(df, category):
 		'''
 		Filter entries by 
 		Category and return the 
 		filtered Dataframe 
 		'''
-		return self.df[self.df['Category'] == category]
+		return df[df['Category'] == category]
 
 
