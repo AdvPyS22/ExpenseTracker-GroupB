@@ -67,7 +67,7 @@ def validate_category(string):
 	'''
 	try:
 		category = int(string)
-		if category>0 and category<=6:
+		if 0 < category <= 6:
 			return True
 	except:
 		pass

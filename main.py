@@ -50,6 +50,10 @@ def load_expenses():
 	return df
 
 def input_expense():
+	'''
+	Asks the user to provide titel, category, date and amount of a expense.
+	Checks if the user input are in a format that we want
+	'''
 	print('Let\'s start adding Expenses')
 	title = input('Enter the Title of the Expense: ')
 	
@@ -83,6 +87,14 @@ def input_expense():
 
 
 if __name__ == '__main__':
+	'''
+	Asks the user what action the user wants to take when the code is executed.
+	The choices are:
+		1. Enter Expense Entry
+		2. Filter Expenses
+		3. Visualize Expenses
+    Checks if the chosen choice is available.
+	'''
 	print('Welcome to Expense Tracker!')
 	df = load_expenses()
 	
