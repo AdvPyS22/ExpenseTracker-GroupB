@@ -4,10 +4,11 @@ Members : Shunyu Wu, Jerome Staeheli, Kartik Kohli
 '''
 
 import csv
-import datetime 
+from datetime import datetime
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from retrieval import Retrieval
 from helper import *
 
 class Visualize:
@@ -249,86 +250,151 @@ class Visualize:
 
 			# yearly
 			if input_piechart_option == 1:
+				input_piechart_flag = self.pie_filter_year()
+			# monthly
+			elif input_piechart_option == 2:
+				input_piechart_flag = self.pie_filter_month()
+			# timeframe
+			elif input_piechart_option == 3:
+				input_piechart_flag = self.pie_filter_timeframe()	
+			# category
+			elif input_piechart_option == 4:
+				# Category input and error handling
+				input_piechart_flag = self.pie_filter_category()	
+			else :
+				print('Please enter a valid pie chart plot task')
+		return 0
+
+	def pie_filter_year(self):
+		'''
+		Filters dataframe according to a year asked from the user
+		
+		Parameters
+		----------
+		df : panda dataframe
+			with the column Date containing datetime elements.
+
+		Returns
+		-------
+		bool
+			to terminate while loop the function is in.
+		'''
+		valid_year_flag = False
+		while not valid_year_flag:
+			year = input('Enter the Year as YYYY: ')
+			valid_year_flag = validate_year(year)
+			if not valid_year_flag:
+				print('Please enter a valid year in YYYY Format')
+			else:
+				datetime_year = datetime.datetime.strptime(year, '%Y')
+				df_filter = Retrieval.filter_expenses_by_year(self.df, datetime_year)
+				df_filter = df_filter.groupby('Category').sum().reset_index()
+				self.pie_yearly(df_filter, year)
+		return True
+
+	def pie_filter_month(self):
+		'''
+		Filters dataframe according to a month asked from the user
+	
+		Parameters
+		----------
+		df : panda dataframe
+			with the column Date containing datetime elements.
+
+		Returns
+		-------
+		bool
+			to terminate while loop the function is in.
+		'''
+		valid_month_flag = False
+		while not valid_month_flag:
+			month = input('Enter the Month as MM-YYYY: ')
+			valid_month_flag = validate_month(month)
+			if not valid_month_flag:
+				print('Please enter a valid year in MM-YYYY Format')
+			else:
+				datetime_month = datetime.datetime.strptime(month, '%m-%Y')
+				df_filter = Retrieval.filter_expenses_by_month(self.df, datetime_month)
+				df_filter = df_filter.groupby('Category').sum().reset_index()
+				self.pie_monthly(df_filter, month)
+		return True
+
+	def pie_filter_timeframe(self):
+		'''
+		Filters dataframe according to a timeframe asked from the user
+		
+		Parameters
+		----------
+		df : panda dataframe
+			with the column Date containing datetime elements.
+
+		Returns
+		-------
+		bool
+			to terminate while loop the function is in.
+		'''
+		valid_date_flag = False
+		while not valid_date_flag:
+			start_date = input('Enter the Start Date as DD-MM-YYYY: ')
+			end_date = input('Enter the End Date as DD-MM-YYYY: ')
+			valid_date_flag = validate_date(start_date) & validate_date(end_date)
+			if not valid_date_flag:
+				print('Please enter a valid date in DD-MM-YYYY Format')
+			else:
+				datetime_start_date = datetime.datetime.strptime(start_date, '%d-%m-%Y')
+				datetime_end_date = datetime.datetime.strptime(end_date, '%d-%m-%Y')
+				df_filter = Retrieval.filter_expenses_by_timeframe(self.df, datetime_start_date, \
+				                        datetime_end_date)
+				df_filter = df_filter.groupby('Category').sum().reset_index()
+				self.pie_timeframe(df_filter, start_date, end_date)
+		return True
+
+	def pie_filter_category(self):
+		'''
+		Filters dataframe according to a year asked from the user
+	
+		Parameters
+		----------
+		df : panda dataframe
+			with the column Date containing datetime elements.
+
+		Returns
+		-------
+		bool
+			to terminate while loop the function is in.
+		'''
+		valid_category_flag = False
+		while(not valid_category_flag):
+			category = input_category()
+			valid_category_flag = validate_category(category)
+			if not valid_category_flag:
+				print('Please enter a valid category between 1 and 6')
+			else:
 				valid_year_flag = False
 				while not valid_year_flag:
 					year = input('Enter the Year as YYYY: ')
 					valid_year_flag = validate_year(year)
 					if not valid_year_flag:
 						print('Please enter a valid year in YYYY Format')
-					else:
-						datetime_year = datetime.datetime.strptime(year, '%Y')
-						df_filter = filter_expenses_by_year(self.df, datetime_year)
-						df_filter = df_filter.groupby('Category').sum().reset_index()
-						self.pie_yearly(df_filter, year)
-				input_piechart_flag = True
-
-			# monthly
-			elif input_piechart_option == 2:
-				valid_month_flag = False
-				while not valid_month_flag:
-					month = input('Enter the Month as MM-YYYY: ')
-					valid_month_flag = validate_month(month)
-					if not valid_month_flag:
-						print('Please enter a valid year in MM-YYYY Format')
-					else:
-						datetime_month = datetime.datetime.strptime(month, '%m-%Y')
-						df_filter = filter_expenses_by_month(self.df, datetime_month)
-						df_filter = df_filter.groupby('Category').sum().reset_index()
-						self.pie_monthly(df_filter, month)
-				input_piechart_flag = True
-
-
-			# timeframe
-			elif input_piechart_option == 3:
-				valid_date_flag = False
-				while not valid_date_flag:
-					start_date = input('Enter the Start Date as DD-MM-YYYY: ')
-					end_date = input('Enter the End Date as DD-MM-YYYY: ')
-					valid_date_flag = validate_date(start_date) & validate_date(end_date)
-					if not valid_date_flag:
-						print('Please enter a valid date in DD-MM-YYYY Format')
-					else:
-						datetime_start_date = datetime.datetime.strptime(start_date, '%d-%m-%Y')
-						datetime_end_date = datetime.datetime.strptime(end_date, '%d-%m-%Y')
-						df_filter = filter_expenses_by_timeframe(self.df, datetime_start_date, \
-						                        datetime_end_date)
-						df_filter = df_filter.groupby('Category').sum().reset_index()
-						self.pie_timeframe(df_filter, start_date, end_date)
-				input_piechart_flag = True	
-
-			# category
-			elif input_piechart_option == 4:
-				# Category input and error handling
-				valid_category_flag = False
-				while(not valid_category_flag):
-					category = input_category()
-					valid_category_flag = validate_category(category)
-					if not valid_category_flag:
-						print('Please enter a valid category between 1 and 6')
-					else:
-						valid_year_flag = False
-						while not valid_year_flag:
-							year = input('Enter the Year as YYYY: ')
-							valid_year_flag = validate_year(year)
-							if not valid_year_flag:
-								print('Please enter a valid year in YYYY Format')
-							else:	
-								category = int(category)
-								df_filter = filter_expenses_by_category(df, category)
-								df_filter.drop('Category', inplace=True, axis=1)
-								df_filter['Month'] =  df_filter['Date'].dt.month
-								df_filter = df_filter.groupby('Month').sum().reset_index()
-								self.pie_category(df_filter, category, year)
-
-				input_piechart_flag = True	
-			else :
-				print('Please enter a valid pie chart plot task')
-		return 0
-
+					else:	
+						category = int(category)
+						df_filter = Retrieval.filter_expenses_by_category(self.df, category)
+						df_filter.drop('Category', inplace=True, axis=1)
+						df_filter['Month'] =  df_filter['Date'].dt.month
+						df_filter = df_filter.groupby('Month').sum().reset_index()
+						self.pie_category(df_filter, category, year)
+		return True
 
 	def pie_yearly(self, df_filter, year):
 		'''
-		draw yearly pie chart by category
+		Parameters
+		----------
+		df_filter : pandadataframe
+			Filtered for the user defined category and year.
+		year : str
+			Str corresponding to the chosen year.
+
+    	shows pieplot of the share of the categories from the chosen year.
 		'''
 		labels = []
 		items = []
@@ -352,7 +418,14 @@ class Visualize:
 
 	def pie_monthly(self, df_filter, month):
 		'''
-		draw yearly pie chart by category
+		Parameters
+		----------
+		df_filter : pandadataframe
+			Filtered for the user defined category and year.
+		month : str
+			Str corresponding to the chosen month.
+
+    	shows pieplot of the share of the categories from the chosen month.
 		'''
 		labels = []
 		items = []
@@ -375,6 +448,18 @@ class Visualize:
 
 
 	def pie_timeframe(self, df_filter, start_date, end_date):
+		'''
+		Parameters
+		----------
+		df_filter : pandadataframe
+			Filtered for the user defined category and year.
+		start_date : str
+			Str corresponding to the chosen start date.
+		year : str
+			Str corresponding to the chosen end date.
+	
+	    shows pieplot of a categories from the chosen timeframe, shares are the months
+		'''
 		labels = []
 		items = []
 		# fetch category and amount
@@ -396,6 +481,23 @@ class Visualize:
 
 
 	def pie_category(self, df_filter, category, year):
+		'''
+		Parameters
+		----------
+		df_filter : pandadataframe
+			Filtered for the user defined category and year.
+		category : int
+			Int corresponding to the chosen category.
+		year : str
+			Str corresponding to the chosen year.
+
+		Returns
+		-------
+		int
+			placeholder.
+	
+    	shows pieplot of the chosen category in a year and the share of the months
+		'''
 		labels = []
 		items = []
 		month_list = {1:"January", 2:"February", 3:"March", 4:"April", 5:"May", 6:"June", 7:"June",

@@ -1,5 +1,19 @@
 import datetime
 
+category_dict = {1:'Groceries', 2:'Entertainment', 3:'Travel', 4:'Shopping', 5:'Bills', 6:'Investments'}
+
+def input_category():
+	# Category input string 
+	return input('Enter Category as an Integer as follows: \n \
+	1 : Groceries \n \
+	2 : Entertainment \n \
+	3 : Travel \n \
+	4 : Shopping \n \
+	5 : Bills \n \
+	6 : Investments \n \
+	Category: ')
+
+
 def validate_date(string):
 	''' 
 	Given an input string, validate whether
@@ -53,7 +67,7 @@ def validate_category(string):
 	'''
 	try:
 		category = int(string)
-		if category>0 and category<=6:
+		if 0 < category <= 6:
 			return True
 	except:
 		pass
