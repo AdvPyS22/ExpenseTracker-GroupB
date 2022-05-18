@@ -11,6 +11,7 @@ from visualize import Visualize
 from retrieval import Retrieval
 from helper import *
 
+
 DATA_FILE = './Expense.csv'
 
 def save_expense_entry(title, category, date, amount):
@@ -39,13 +40,24 @@ def save_expense_entry(title, category, date, amount):
 	except:
 		return False
 
-
 def load_expenses():
 	'''
 	Load the expense csv file and
 	return dataframe of entries
 	'''
-	df = pd.read_csv(DATA_FILE, header=0)
+    # Checks if there is data to load, if there is not create a csv with the header
+	try:
+		df = pd.read_csv(DATA_FILE, header=0, encoding='UTF8')
+	except:
+		with open(DATA_FILE, 'w', newline='') as csv_file:
+			csv.writer(csv_file).writerow(['Title','Category','Date','Amount'])
+		df = pd.read_csv(DATA_FILE, header=0)
+	
+	# Check if every column needed is there
+	all_columns_check(df)
+	# Check if every row has the right datatype
+	check_data_in_column(df)
+	
 	df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
 	return df
 
