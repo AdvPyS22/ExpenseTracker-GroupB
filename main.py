@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from visualize import Visualize
 from retrieval import Retrieval
 from helper import *
+import sys
 
 
 DATA_FILE = './Expense.csv'
@@ -54,9 +55,12 @@ def load_expenses():
 		df = pd.read_csv(DATA_FILE, header=0)
 	
 	# Check if every column needed is there
-	all_columns_check(df)
+	if not all_columns_check(df):
+		sys.exit()
+        
 	# Check if every row has the right datatype
-	check_data_in_column(df)
+	if not check_data_in_column(df):
+		sys.exit()
 	
 	df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
 	return df

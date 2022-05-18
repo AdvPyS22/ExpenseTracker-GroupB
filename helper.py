@@ -1,5 +1,5 @@
 import datetime
-import sys
+
 
 category_dict = {1:'Groceries', 2:'Entertainment', 3:'Travel', 4:'Shopping', 5:'Bills', 6:'Investments'}
 
@@ -90,12 +90,13 @@ def all_columns_check(df):
     for column in all_columns:
         try:
             test_mask = df[column]
+            return True
         except:
             print('The first row of your ./Expense.csv file is missing the ' + column + ' column.')
             print('Check your csv if the first row looks like this: \n \
                       Title,Category,Date,Amount')
             print('or delete csv.')
-            sys.exit()
+            return False
             
 
     
@@ -162,6 +163,6 @@ def check_data_in_column(df):
             print(ask_str)
             print('A number that can be converted to a float')           
         
-        sys.exit()
-
+        return False
+    return True
         
