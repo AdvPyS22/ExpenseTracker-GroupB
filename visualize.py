@@ -124,8 +124,8 @@ class Visualize:
 
 	    Visualizes as a Barplot the expenses from a start date to a end date.
 	    The timestep can either be 'Months' or 'Weeks' and are chosen by the user
-	    '''
-	    # Ask user about the timspan and the time steps he wants to have visualized
+	    '''    
+        # Ask user about the timspan and the time steps he wants to have visualized
 	    show_plot = input('What do you want to have visualised. \n \
 	                          To display barplot of weekly expense input week or w. \n \
 	                          To display barplot of monthly expenses input month or m. \n \
@@ -152,7 +152,6 @@ class Visualize:
 	        # Add up all expenses of the same month and plot it
 	        if show_month:
 	            self.generate_barplot(expense_df, 'Months', end_date)
-
 
 	def x_ticks(self, expense_df, time_step, end_date):
 	    '''

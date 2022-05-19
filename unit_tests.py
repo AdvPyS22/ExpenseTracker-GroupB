@@ -1,6 +1,7 @@
 import unittest
 
 from helper import *
+from visualize import Visualize
 
 class UnitTests(unittest.TestCase):
 	'''
@@ -34,6 +35,21 @@ class UnitTests(unittest.TestCase):
 		self.assertFalse(validate_category('7'))
 		self.assertFalse(validate_category('1.1'))
 		
+		# Validate Column test
+		self.assertTrue(validate_column_names(pd.read_csv('./Expense_no_mistakes.csv', header=0, encoding='UTF8')))
+		self.assertFalse(validate_column_names(pd.read_csv('./Expense_no_columns.csv', header=0, encoding='UTF8')))
+		self.assertFalse(validate_column_names(pd.read_csv('./Expense_no_title.csv', header=0, encoding='UTF8')))		
+		self.assertFalse(validate_column_names(pd.read_csv('./Expense_no_category.csv', header=0, encoding='UTF8')))		
+		self.assertFalse(validate_column_names(pd.read_csv('./Expense_no_date.csv', header=0, encoding='UTF8')))		
+		self.assertFalse(validate_column_names(pd.read_csv('./Expense_no_amount.csv', header=0, encoding='UTF8')))		
+
+		# Validate Row test
+		self.assertTrue(validate_row_data(pd.read_csv('./Expense_no_mistakes.csv', header=0, encoding='UTF8')))
+		self.assertFalse(validate_row_data(pd.read_csv('./Expense_2_wrong_category.csv', header=0, encoding='UTF8')))
+		self.assertFalse(validate_row_data(pd.read_csv('./Expense_2_wrong_date.csv', header=0, encoding='UTF8')))
+		self.assertFalse(validate_row_data(pd.read_csv('./Expense_2_wrong_Amount.csv', header=0, encoding='UTF8')))
+		self.assertFalse(validate_row_data(pd.read_csv('./Expense_2_wrong_all_columns.csv', header=0, encoding='UTF8')))
+
 
 if __name__ == '__main__':
 	print('Performing Unit Tests...')

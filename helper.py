@@ -1,5 +1,5 @@
 import datetime
-
+import pandas as pd
 
 category_dict = {1:'Groceries', 2:'Entertainment', 3:'Travel', 4:'Shopping', 5:'Bills', 6:'Investments'}
 
@@ -75,7 +75,7 @@ def validate_category(string):
 	return False
 
 
-def all_columns_check(df):
+def validate_column_names(df):
     '''
     Parameters
     ----------
@@ -90,17 +90,17 @@ def all_columns_check(df):
     for column in all_columns:
         try:
             test_mask = df[column]
-            return True
+            continue
         except:
             print('The first row of your ./Expense.csv file is missing the ' + column + ' column.')
             print('Check your csv if the first row looks like this: \n \
                       Title,Category,Date,Amount')
             print('or delete csv.')
             return False
-            
-
+    return True
+        
     
-def check_data_in_column(df):
+def validate_row_data(df):
     '''
     Checks if every row in every column has the right format
     
@@ -122,14 +122,11 @@ def check_data_in_column(df):
     
     # Check every row for wrong formats
     for row in range(len(df)):
-
         if not validate_category(df['Category'][row]):
             faulty_category_rows.append(row + 1) 
-        
         if not validate_date(df['Date'][row]):
-            faulty_date_rows.append(row + 1)
-            
-        if not validate_amount(df['Amount'][row]):
+            faulty_date_rows.append(row + 1)  
+        if not validate_amount(df['Amount'][row])[0]:
             faulty_amount_rows.append(row + 1)
     
     cat_bool    = faulty_category_rows == []
@@ -138,14 +135,11 @@ def check_data_in_column(df):
     
     # Return which rows contain the entries with the wrong format
     if date_bool == False or cat_bool == False or amount_bool == False:
-        
         wrong_format = ' in the following rows are not in the right format:'
         ask_str = 'Please change the format to:'
-        
         print('Your csv contains entries, that are not in the right format')
             
         if cat_bool == False:
-
             print('The Category' + wrong_format)
             print(faulty_category_rows)
             print(ask_str)
@@ -159,7 +153,7 @@ def check_data_in_column(df):
             
         if amount_bool == False:
             print('The Amount' + wrong_format)
-            print(faulty_date_rows)
+            print(faulty_amount_rows)
             print(ask_str)
             print('A number that can be converted to a float')           
         

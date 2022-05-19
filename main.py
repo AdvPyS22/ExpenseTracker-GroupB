@@ -53,15 +53,13 @@ def load_expenses():
 		with open(DATA_FILE, 'w', newline='') as csv_file:
 			csv.writer(csv_file).writerow(['Title','Category','Date','Amount'])
 		df = pd.read_csv(DATA_FILE, header=0)
-	
 	# Check if every column needed is there
-	if not all_columns_check(df):
+	if not validate_column_names(df):
 		sys.exit()
-        
 	# Check if every row has the right datatype
-	if not check_data_in_column(df):
+	if not validate_row_data(df):
 		sys.exit()
-	
+    
 	df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
 	return df
 
