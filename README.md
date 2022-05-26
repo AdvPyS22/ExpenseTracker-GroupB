@@ -4,6 +4,10 @@ Advanced Python - Spring 2022 Project
 
 An app where the user can manage all their expenses in one place. Adding, Editing or Visualizing made simple 
 
+To activate the virtual-environment setup, including the set of dependencies with their required version libraries, use the following command prior to running the modules :
+
+`source venvironment/bin/activate`
+
 # Roadmap
 ## April 28th
 - Building Roadmap
@@ -61,6 +65,8 @@ Category can be one of the following : *Groceries, Entertainment, Travel, Shoppi
 - Refactor code to use Try-Catch blocks for handling Exceptions
 	- For handling poorly formatted input (For ex. Date)
 - Implement Unit Tests with atleast 4 test cases
+
+Run `python3 unit_tests.py -v` in terminal.
 
 ## June 2nd
 - Set up virtual environment for all code dependencies and running the project
