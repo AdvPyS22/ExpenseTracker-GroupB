@@ -4,6 +4,10 @@ Advanced Python - Spring 2022 Project
 
 An app where the user can manage all their expenses in one place. Adding, Editing or Visualizing made simple 
 
+To activate the virtual-environment setup, including the set of dependencies with their required version libraries, use the following command prior to running the modules :
+
+`source venvironment/bin/activate`
+
 # Roadmap
 ## April 28th
 - Building Roadmap
