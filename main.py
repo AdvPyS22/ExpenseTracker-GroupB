@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from visualize import Visualize
 from retrieval import Retrieval
 from helper import *
+from change import Change
 import sys
 
 
@@ -117,7 +118,8 @@ if __name__ == '__main__':
 		print('What would you like to do today? \n \
 			1. Enter Expense Entry \n \
 			2. Filter Expenses \n \
-			3. Visualize Expenses \n')
+			3. Visualize Expenses \n \
+			4. Change Existing Entry \n')
 		input_task = input('Please Enter the Number for the task you want to perform: ')
 		
 		# Input sanitisation
@@ -137,6 +139,9 @@ if __name__ == '__main__':
 			input_task_flag = True
 		elif input_task == 3:
 			visualizer = Visualize(df)
+			input_task_flag = True
+		elif input_task == 4:
+			change = Change(df)
 			input_task_flag = True
 		else:
 			print('Invalid Input!! Please enter a valid integer for the task') 
