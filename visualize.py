@@ -216,6 +216,7 @@ class Visualize:
 	    plt.title(column_str[:-1] + 'ly expenses')
 	    plt.xlabel(column_str[:-1] + ' within chosen dates')
 	    plt.ylabel('Amount of expense')
+	    plt.tight_layout()
 	    plt.show()
 
 
@@ -412,7 +413,9 @@ class Visualize:
 		loc = "upper left",
 		bbox_to_anchor = (0.75,1),
 		)
+		plt.tight_layout()
 		plt.show() 
+
 
 
 	def pie_monthly(self, df_filter, month):
@@ -443,6 +446,7 @@ class Visualize:
 		loc = "upper left",
 		bbox_to_anchor = (0.75,1),
 		)
+		plt.tight_layout()
 		plt.show() 
 
 
@@ -476,6 +480,7 @@ class Visualize:
 		  loc = "upper left",
 		  bbox_to_anchor = (0.75,1),
 		)
+		plt.tight_layout()
 		plt.show()   
 
 
@@ -517,5 +522,6 @@ class Visualize:
 		loc = "upper left",
 		bbox_to_anchor = (0.75,1),
 		)
+		plt.tight_layout()
 		plt.show()
 		return 0
