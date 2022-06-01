@@ -87,7 +87,10 @@ def input_expense():
 	# Date input and error handling
 	valid_date_flag = False
 	while(not valid_date_flag):
-		date = input('Enter the Date of the Expense as DD-MM-YYYY: ')
+		date = input('Enter the Date of the Expense as DD-MM-YYYY(shortcut "t" for today): ')
+		if date == "t":
+			# date = datetime.today().strftime('%d-%m-%Y')
+			date = str(datetime.date.today().strftime('%d-%m-%Y'))
 		valid_date_flag = validate_date(date)
 		if not valid_date_flag:
 			print('Please enter a valid date in DD-MM-YYYY Format')
