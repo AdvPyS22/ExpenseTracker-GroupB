@@ -92,7 +92,7 @@ def validate_column_names(df):
         import_headers = df.axes[1] #==> 1 is to identify columns
         miss_match_header = [i for i in import_headers if i not in header_list]
         # assert (len(miss_match_header) == 0)
-        if len(miss_match_header) == 0:
+        if len(miss_match_header) != 0:
             raise NameError("The first row of your ./Expense.csv file is not excepted header list.") 
 
     except:

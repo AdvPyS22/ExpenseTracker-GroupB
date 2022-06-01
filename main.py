@@ -100,7 +100,8 @@ def input_expense():
 			print('Please enter a valid amount value')
 
 	if save_expense_entry(title, category, date, amount):
-		print('Expense successfully saved!')
+		print("New expense ["+title+","+str(category)+","+date+","+str(amount)+"] successfully saved!")
+		# print('Expense successfully saved!')
 	else:
 		print('Oops! We ran into some trouble. Please try again later')
 
