@@ -160,3 +160,22 @@ def validate_row_data(df):
         return False
     return True
         
+def days_in_month(month, year):
+    '''
+    Returns the number of days in the input Month
+    '''
+    def leap_year(year):
+        if year % 400 == 0:
+            return True
+        if year % 100 == 0:
+            return False
+        if year % 4 == 0:
+            return True
+        return False
+    if month in {1, 3, 5, 7, 8, 10, 12}:
+        return 31
+    if month == 2:
+        if leap_year(year):
+            return 29
+        return 28
+    return 30

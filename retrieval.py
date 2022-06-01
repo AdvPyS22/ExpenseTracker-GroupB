@@ -230,7 +230,8 @@ class Retrieval:
 		and return the filtered Dateframe
 		'''
 		first_day = datetime_month.strftime("%Y-%m-01")
-		last_day = datetime_month.strftime("%Y-%m-31") # it doesn't matter if the month has less than 31 days.
+		n_days = days_in_month(datetime_month.strftime('%m'), datetime_month.strftime('%Y'))
+		last_day = datetime_month.strftime("%Y-%m-" + str(n_days))
 		return 	df[(df['Date'] >= first_day) & (df['Date'] <= last_day)]
 
 	@staticmethod
