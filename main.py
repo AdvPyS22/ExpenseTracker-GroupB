@@ -13,6 +13,8 @@ from helper import *
 from change import Change
 import sys
 
+import os
+import argparse
 
 # DATA_FILE = './Expense_header_wrong.csv'
 DATA_FILE = './Expense.csv'
@@ -91,7 +93,6 @@ def input_expense():
 		while(not valid_date_flag):
 			date = input('Enter the Date of the Expense as DD-MM-YYYY(shortcut "t" for today): ')
 			if date == "t":
-				# date = datetime.today().strftime('%d-%m-%Y')
 				date = str(datetime.date.today().strftime('%d-%m-%Y'))
 			valid_date_flag = validate_date(date)
 			if not valid_date_flag:
@@ -111,6 +112,44 @@ def input_expense():
 			print('Oops! We ran into some trouble. Please try again later')
 
 
+def add(args):
+	DATA_FILE = args.add[0]
+	title = args.add[1]
+	category = args.add[2]
+	date = args.add[3]
+	amount = args.add[4]
+
+
+	print(title, category, date, amount)
+	# Category input and error handling
+	valid_category_flag = False
+	valid_category_flag = validate_category(category)
+	if not valid_category_flag:
+		print("wrong category")
+		sys.exit()
+
+	# Date input and error handling
+	valid_date_flag = False
+	if date == "t":
+		date = str(datetime.date.today().strftime('%d-%m-%Y'))
+	valid_date_flag = validate_date(date)
+	if not valid_date_flag:
+		print('Please enter a valid date in DD-MM-YYYY Format')
+		sys.exit()
+
+	valid_amount_flag = False
+	valid_amount_flag, amount = validate_amount(amount)
+	if not valid_amount_flag:
+		print('Please enter a valid amount value')
+
+	# print(title, category, date, amount)
+
+	if save_expense_entry(title, category, date, amount):
+		print("New expense ["+title+","+str(category)+","+date+","+str(amount)+"] successfully saved!")
+	else:
+		print('Oops! We ran into some trouble. Please try again later')
+
+
 if __name__ == '__main__':
 	'''
 	Asks the user what action the user wants to take when the code is executed.
@@ -120,38 +159,58 @@ if __name__ == '__main__':
 		3. Visualize Expenses
     Checks if the chosen choice is available.
 	'''
-	print('Welcome to Expense Tracker!')
-	df = load_expenses()
-	
-	input_task_flag = False
-	while not input_task_flag:
-		print('What would you like to do today? \n \
-			1. Enter Expense Entry \n \
-			2. Filter Expenses \n \
-			3. Visualize Expenses \n \
-			4. Change Existing Entry \n')
-		input_task = input('Please Enter the Number for the task you want to perform: ')
-		
-		# Input sanitisation
-		try:
-			input_task = int(input_task)
-		except:
-			print('Invalid Input!! Please enter a valid integer for the task')
-			continue
+	# CLI Implementation test
+	# create parser object
+	parser = argparse.ArgumentParser(description = "An Expense Tracker!")
 
-		# Switch case of task options
-		if input_task == 1: 
-			input_expense()
-			input_task_flag = True
-		elif input_task == 2: 
-			#filter_expenses(df)
-			retrieval = Retrieval(df)
-			input_task_flag = True
-		elif input_task == 3:
-			visualizer = Visualize(df)
-			input_task_flag = True
-		elif input_task == 4:
-			change = Change(df)
-			input_task_flag = True
-		else:
-			print('Invalid Input!! Please enter a valid integer for the task') 
+	# defining arguments for parser object
+	parser.add_argument("-a", "--add", type = str, nargs = 5, metavar = ('file_name','title', 'category', 'date', 'amount'), default = None, 
+		help = "Add expense to tracker. \n\
+				[file_name]: name of csv files. \n\
+		   		[Category] : 1 : Groceries \n\
+							2 : Entertainment \n\
+							3 : Travel\n \
+							4 : Shopping \n\
+							5 : Bills\n \
+							6 : Investments \n\
+				[Dateformat]: DD-MM-YYYY (shortcut t for today)")
+	args = parser.parse_args()
+
+	if args.add != None:
+		add(args)
+	else:
+		print('Welcome to Expense Tracker!')
+		df = load_expenses()
+		
+		input_task_flag = False
+		while not input_task_flag:
+			print('What would you like to do today? \n \
+				1. Enter Expense Entry \n \
+				2. Filter Expenses \n \
+				3. Visualize Expenses \n \
+				4. Change Existing Entry \n')
+			input_task = input('Please Enter the Number for the task you want to perform: ')
+			
+			# Input sanitisation
+			try:
+				input_task = int(input_task)
+			except:
+				print('Invalid Input!! Please enter a valid integer for the task')
+				continue
+
+			# Switch case of task options
+			if input_task == 1: 
+				input_expense()
+				input_task_flag = True
+			elif input_task == 2: 
+				#filter_expenses(df)
+				retrieval = Retrieval(df)
+				input_task_flag = True
+			elif input_task == 3:
+				visualizer = Visualize(df)
+				input_task_flag = True
+			elif input_task == 4:
+				change = Change(df)
+				input_task_flag = True
+			else:
+				print('Invalid Input!! Please enter a valid integer for the task') 
