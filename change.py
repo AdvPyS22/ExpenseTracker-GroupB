@@ -26,14 +26,13 @@ class Change:
         -------
         New updated csv.
         '''
-        
         input_flag = False
         
         while not input_flag:
             
+            # Asks the user if the user can find the entry the user wants to change
             print(self.df)
-            
-            
+
             user_input = input('Do you see the entry you want to change? [Y/N]: ')
             
             if user_input.lower() == 'yes' or user_input.lower() == 'y':
@@ -41,12 +40,112 @@ class Change:
                 input_flag = True
 
             elif user_input.lower() == 'no' or user_input.lower() == 'n':
-                print('works no')
+                self.no_filter_path()
                 input_flag = True
-                
+
             else:
                 print('You did not chose an existing option.')
 
+
+    def no_filter_path(self):
+        '''
+        Asks the user if the user wants to filter for an element in one column
+        and asks afterwards if the user has found the value the user wants to change
+
+        If an entry is found the user can change it. 
+        If the entry is not found the user is told that it eighter does not exist
+        or that the user made a typo
+        '''
+        
+        entry_not_found = True
+        
+        # Asks the user if the user wants to do a title search
+        user_answer = self.yes_no('Do you want to search for a title?')
+        if user_answer:
+            entry_not_found = self.search('Please input your title (Sensitive to lower and upper case letters): ', 'Title')
+
+        # Asks the user if the user wants to do a category search
+        if entry_not_found:
+            user_answer = self.yes_no('Do you want to search for a category?')
+            if user_answer:
+                entry_not_found = self.search('Please input your category (categories goes from 1-6): ', 'Category')
+
+        # Asks the user if the user wants to do a date search
+        if entry_not_found:
+            user_answer = self.yes_no('Do you want to search for a date?')
+            if user_answer:
+                entry_not_found = self.search('Please input your date in YYYY-MM-DD format (has to be this format): ', 'Date')
+
+        # Asks the user if the user wants to do a amount search
+        if entry_not_found:
+            user_answer = self.yes_no('Do you want to search for a amount?')
+            if user_answer:
+                entry_not_found = self.search('Please input your amount as a number: ', 'Amount')
+
+        # Directs the user to the entry change when the entry is found 
+        #otherwise the user is told that it does not exist or that the user made a typo
+        if entry_not_found:
+            print('Eighter your entry does not exist or you did a typo.')
+        else:
+            self.change_entry()
+
+    
+    def search(self, message_string, column):
+        '''
+        Parameters
+        ----------
+        message_string : str
+            The question that asks the user to input a value the user thinks is in the column.
+        column : str
+            The string for the column that needs to be searched.
+
+        Returns
+        -------
+        bool
+            Answer to the question if the user has found the entry the user is looking for.
+        '''
+        user_value = input(message_string)
+        
+        # Changes the data type for Category and amount since they are in a diffrent data type
+        if column == 'Category':
+            user_value = int(user_value)
+        elif column == 'Amount':
+            user_value = float(user_value)
+        
+        # Print the filtered dataframe and ask the user if the user can find the entry the user wants to change
+        print(self.df[self.df[column] == user_value])
+        user_answer = self.yes_no('Did you find your entry?')
+        
+        # Swap around true and false so if statements do not need not
+        return not user_answer
+        
+    
+    def yes_no(self, message_string):
+        '''
+        Parameters
+        ----------
+        message_string : str
+            A string you tell the user.
+
+        Returns
+        -------
+        bool
+            If the answer is yes the method/function returns true.
+        '''
+        
+        # Cases that mean yes
+        yes = ('yes', 'y')
+        
+        # Print custum question
+        print()
+        print(message_string, end = '')
+        
+        # User answer and the check for it
+        user_yes = input('Type Yes, yes, Y or y if the answer is yes: ')
+        if user_yes.lower() in yes:
+            return True
+        return False
+    
 
     def change_entry(self):
         '''
@@ -56,7 +155,9 @@ class Change:
         # Ask user which line the user wants to change and check if the row exists
         change_flag = False
         while not change_flag:
-            user_change = input('Please type the number in front of the entry you want to change: ')
+            print()
+            print('Please type the number in the left of the entry you want to change.', end = '')
+            user_change = input('For example, to change the entry  5  Clothes   4  2022-09-01  36.00  you would type 5: ')
             try:
                 self.df.iloc[int(user_change)]
                 change_flag = True
