@@ -86,17 +86,21 @@ def validate_column_names(df):
     -------
     Returns False if a column is missing.
     '''    
-    all_columns = ['Title', 'Category', 'Date', 'Amount']
-    for column in all_columns:
-        try:
-            test_mask = df[column]
-            continue
-        except:
-            print('The first row of your ./Expense.csv file is missing the ' + column + ' column.')
-            print('Check your csv if the first row looks like this: \n \
-                      Title,Category,Date,Amount')
-            print('or delete csv.')
-            return False
+    header_list = ['Title', 'Category', 'Date', 'Amount']
+
+    try:
+        import_headers = df.axes[1] #==> 1 is to identify columns
+        miss_match_header = [i for i in import_headers if i not in header_list]
+        # assert (len(miss_match_header) == 0)
+        if len(miss_match_header) == 0:
+            raise NameError("The first row of your ./Expense.csv file is not excepted header list.") 
+
+    except:
+        print('The first row of your ./Expense.csv file is not excepted header list.')
+        print('Check your csv if the first row looks like this: \n \
+                  Title,Category,Date,Amount')
+        print('or delete csv.')
+        return False
     return True
         
     
