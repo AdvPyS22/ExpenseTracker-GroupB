@@ -153,6 +153,8 @@ class Retrieval:
 				df_filter = self.filter_expenses_by_year(self.df, datetime_year)
 				print(f'Expenses on %s are: ' % datetime_year.strftime('%Y'))
 				print(df_filter)
+		return True
+
 
 	@staticmethod
 	def filter_block_window(self):
